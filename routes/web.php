@@ -18,7 +18,10 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('logout', 'Auth\LoginController@logout');
 
-Route::group(['as' => 'admin'], function() {
-  Route::get('/admin', 'AdminController@dashboard');
+Route::group(['as' => 'admin.'], function() {
+  Route::get('/admin', 'AdminController@dashboard')->name('dashboard');
+  Route::resource('products', 'ProductController');
+  Route::resource('category', 'CategoryController');
 });
