@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::paginate(3);
 
         return view('admin.category.index', compact('categories'));
     }
@@ -26,7 +26,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return view('admin.category.create', compact('categories'));
     }
 
     /**
@@ -37,7 +38,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+          'title' => 'required|min:5',
+          'slug' => 'required|min:5|unique:categories',
+        ]);
+        $categories = Category::create(
+          $request->only('title', 'description', 'slug')
+        );
+        $categories->childrens()->attach($request->parent_id);
+
+        return back()->with('message', 'Category Added Successfully..!');
     }
 
     /**
@@ -59,7 +69,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+      $categories = Category::all();
+      return view('admin.category.create', ['categories' => $categories, 'category' => $category]);
     }
 
     /**
@@ -71,7 +82,17 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+      $category->title = $request->title;
+      $category->description = $request->description;
+      $category->slug = $request->slug;
+      /* Detach all parent categories */
+      $category->childrens()->detach();
+      /* Attach selected parent categories */
+      $category->childrens()->attach($request->parent_id);
+      /* Save Current Record into Database */
+      $category->save();
+
+      return back()->with('message', 'Record Updated Successfully...!');
     }
 
     /**
@@ -82,6 +103,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        if ($category->delete()) {
+          return back()->with('message', 'Record Deleted Successfully...!');
+        }else {
+          return back()->with('message', 'Record Error Delete...!');
+        }
     }
 }

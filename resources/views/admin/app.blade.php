@@ -15,29 +15,44 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    @yield('css')
 </head>
 <body>
     <div id="app">
 
-      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <main role="main" class="col-md-12 ml-sm-auto col-lg-10 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Dashboard</h1>
-          <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group mr-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+        <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+          <a href="{{ route('admin.dashboard') }}" class="navbar-brand col-sm-3 col-md-2 mr-0">Company Name</a>
+          <input type="text" class="form-control form-control-dark w-100" placeholder="Search" aria-label="Search">
+          <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+              <a href="#" class="nav-link">Sign Out</a>
+            </li>
+          </ul>
+        </nav>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  @yield('breadcrumb')
+                </ol>
+              </nav>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-              <span data-feather="calendar"></span>
-              This week
-            </button>
           </div>
-        </div> -->
-            <br>
+          <nav class="col-md-2 d-none d-md-block bg-light sidebar">
             @include('admin.partials.navbar')
+          </nav>
+          <div class="col-md-12">
             @yield('content')
-        </main>
+          </div>
+        </div>
+      </main>
     </div>
     <script src="{{ asset('js/app.js') }}"></script>
+    @yield('script')
 </body>
 </html>

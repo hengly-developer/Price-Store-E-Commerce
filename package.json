@@ -23,6 +23,8 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "feather-icons": "^4.21.0"
+        "@ckeditor/ckeditor5-build-classic": "^12.1.0",
+        "feather-icons": "^4.21.0",
+        "select2": "^4.0.6"
     }
 }
