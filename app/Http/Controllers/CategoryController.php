@@ -14,9 +14,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(3);
+        $categories = Category::paginate(5);
 
         return view('admin.category.index', compact('categories'));
+    }
+
+    public function trash() {
+      $categories = Category::onlyTrashed()->paginate(3);
+
+      return view('admin.category.index', compact('categories'));
     }
 
     /**
@@ -39,8 +45,8 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-          'title' => 'required|min:5',
-          'slug' => 'required|min:5|unique:categories',
+          'title' => 'required|min:4',
+          'slug' => 'required|min:4|unique:categories',
         ]);
         $categories = Category::create(
           $request->only('title', 'description', 'slug')
@@ -69,7 +75,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-      $categories = Category::all();
+      $categories = Category::where('id', '!=', $category->id)->get();
       return view('admin.category.create', ['categories' => $categories, 'category' => $category]);
     }
 
@@ -95,6 +101,15 @@ class CategoryController extends Controller
       return back()->with('message', 'Record Updated Successfully...!');
     }
 
+    public function recoverCat($id) {
+      $category = Category::withTrashed()->findOnFail($id);
+      if ($category->resotre()) {
+        return back()->with('message', 'Category Restore Successfully...!');
+      }else {
+        return back()->with('message', 'Error Restore Category...!');
+      }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -103,10 +118,18 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->delete()) {
+        if ($category->childrens()->detach() && $category->forceDelete()) {
           return back()->with('message', 'Record Deleted Successfully...!');
         }else {
           return back()->with('message', 'Record Error Delete...!');
         }
+    }
+
+    public function remove(Category $category) {
+      if ($category->delete()) {
+        return back()->with('message', 'Category Trashed Successfully...!');
+      }else {
+        return back()->with('message', 'Error Trashed Category...!');
+      }
     }
 }

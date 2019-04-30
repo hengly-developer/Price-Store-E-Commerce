@@ -32,7 +32,7 @@
               </tr>
             </thead>
             <tbody>
-              @if ($categories)
+              @if ($categories->count() > 0)
                 @foreach ($categories as $category)
                   <tr>
                     <td>{{ $category->id }}</td>
@@ -62,7 +62,7 @@
                 @endforeach
               @else
                 <tr>
-                  <td colspan="5">No Categories Found</td>
+                  <td colspan="12">No Categories Found</td>
                 </tr>
               @endif
             </tbody>
