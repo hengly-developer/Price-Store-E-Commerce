@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use App\Category;
+use App\Cart;
+use Session;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProduct;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +34,16 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
+    public function addToCart(Product $product, Request $request) {
+
+      $oldCart = Session::has('cart') ? Session::get('cart') : null;
+      $qty = $request->qty ? $request->qty : 1;
+      $cart  = new Cart($oldCart);
+      $cart->addProduct($product, $qty);
+      Session::put('cart', $cart);
+
+      return back()->with('message', "Product $product->title as been added to Cart Successfully...!");
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -75,6 +87,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        // dd(Session::get('cart'));
         $categories = Category::with('childrens')->get();
         $products = Product::with('categories')->paginate(12);
         return view('products.all', compact('categories', 'products'));
