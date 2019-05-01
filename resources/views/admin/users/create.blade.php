@@ -4,7 +4,7 @@
 @endsection
 @section('breadcrumb')
 <li class="breadcrumb-item"> <a href="{{ route('admin.dashboard') }}">Dashboard</a> </li>
-<li class="breadcrumb-item active"> <a href="{{ route('admin.users.index') }}">Users</a> </li>
+<li class="breadcrumb-item active"> <a href="">Users</a> </li>
 <li class="breadcrumb-item active" aria-current="page">Add/Edit User</li>
 @endsection
 @section('content')
@@ -14,99 +14,126 @@
     @if (isset($user))
       {{ method_field('PUT') }}
     @endif
-    <div class="form-group row">
-      <div class="col-md-12">
-        @if ($errors->any())
-          <div class="alert alert-danger">
-            <ul>
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
-      </div>
-      <div class="col-md-12">
-        @if (session()->has('message'))
-          <div class="alert alert-success">
-            {{ session('message') }}
-          </div>
-        @endif
-      </div>
-    </div>
     <div class="row">
       <div class="col-lg-9">
         <div class="form-group row">
-          <div class="col-lg-12">
-            <label class="form-control-label">Username:</label>
-            <input type="text" name="username" id="txturl" value="{{ @$user->username }}" class="form-control">
-            <p class="small">{{ config('app.url') }} <span id="url">{{ @$user->slug }}</span>
-              <input type="hidden" name="slug" id="slug" value="{{ @$user->slug }}">
+          <div class="col-md-12">
+            @if ($errors->any())
+              <div class="alert alert-danger">
+                <ul>
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+          </div>
+          <div class="col-md-12">
+            @if (session()->has('message'))
+              <div class="alert alert-success">
+                {{ session('message') }}
+              </div>
+            @endif
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <label class="form-control-label">Name:</label>
+            <input type="text" name="name" id="txturl" value="{{ @$user->profile->name }}" class="form-control">
+            <p class="small">{{ route('admin.profile.index') }} <span id="url">{{ @$user->profile->slug }}</span>
+              <input type="hidden" name="slug" id="slug" value="{{ @$user->profile->slug }}">
             </p>
           </div>
-        </div>
-        <div class="form-group row">
-          <div class="col-lg-12">
+          <div class="col-sm-12 col-md-6">
             <label class="form-control-label">Email:</label>
-            <textarea type="text" name="description" id="description" value="" class="form-control">{!! @$user->description !!}</textarea>
+            <input type="text" name="email" id="email" value="{{ @$user->email }}" class="form-control">
           </div>
         </div>
         <div class="form-group row">
-          <div class="col-lg-6">
-            <label class="form-control-label">Price:</label>
+          <div class="col-sm-12 col-md-6">
+            <label class="form-control-label">Password:</label>
+            <input type="password" name="password" id="password" value="" class="form-control">
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <label class="form-control-label">Confirm Paswword:</label>
+            <input type="password" name="confirm_password" id="confirm_password" value="" class="form-control">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-6 col-md-6">
+            <label class="form-control-label">Status:</label>
             <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">$</span>
-              </div>
-              <input type="text" placeholder="0.00" aria-label="price" name="price" aria-describedby="basic-addon1" value="{{ @$product->price }}">
+              <select class="form-control" name="status">
+                <option value="0" @if (isset($user) && $user->status == 0) {{ 'selected' }} @endif>Blocked</option>
+                <option value="1" @if (isset($user) && $user->status == 1) {{ 'selected' }} @endif>Active</option>
+              </select>
             </div>
           </div>
-          <div class="col-lg-6">
-            <label class="form-control-label">Discount:</label>
+          @php
+            $ids = (isset($user->role) && $user->role->count() > 0) ? array_pluck($user->role->toArray(), 'id') : null
+          @endphp
+          <div class="col-sm-6 col-md-6">
+            <label class="form-control-label">Select Role:</label>
             <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">$</span>
-              </div>
-              <input type="text" name="discount_price" placeholder="0.00" aria-label="discount_price" aria-describedby="discount" value="{{ @$product->discount_price }}">
+              <select class="form-control" name="role_id" id="role">
+                @if ($roles->count() > 0)
+                  @foreach ($roles as $role)
+                    <option value="{{ $role->id }}"
+                      @if (!is_null($ids) && in_array($role->id, $ids))
+                      {{ 'selected' }} @endif>
+                        {{ $role->name }}
+                    </option>
+                  @endforeach
+                @endif
+              </select>
             </div>
           </div>
         </div>
         <div class="form-group row">
-          <div class="card col-sm-12 p-0 mb-2">
-            <div class="card-header align-items-center">
-              <h5 class="card-title float-left">Extra Options</h5>
-              <div class="float-right">
-                <button type="button" id="btn-add" class="btn btn-primary btn-sm">+</button>
-                <button type="button" id="btn-remove" class="btn btn-danger btn-sm">-</button>
-              </div>
+          <div class="col-sm-12 col-md-12">
+            <label class="form-control-label">Address:</label>
+            <div class="input-group mb-3">
+              <input type="text" name="address" class="form-control" value="{{ @$user->address }}" placeholder="Address">
             </div>
-            <div class="card-body" id="extras">
-
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-6 col-md-3">
+            <label class="form-control-label">Country:</label>
+            <div class="input-group mb-3">
+              <select class="form-control" name="country_id" id="countries">
+                <option>Choose Country</option>
+                @foreach ($countries as $country)
+                  <option value="{{ $country->id }}">{{ $country->name }}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <label class="form-control-label">State:</label>
+            <div class="input-group mb-3">
+              <select class="form-control" name="state_id" id="states">
+                <option>Choose State</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <label class="form-control-label">City:</label>
+            <div class="input-group mb-3">
+              <select class="form-control" name="city_id" id="cities">
+                <option>Choose City</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-3">
+            <label class="form-control-label">Phone:</label>
+            <div class="input-group mb-3">
+              <input type="text" name="phone" class="form-control" placeholder="Phone" value="{{ @$user->phone }}">
             </div>
           </div>
         </div>
       </div>
       <div class="col-lg-3">
         <ul class="list-group row">
-          <li class="list-group-item active"> <h5>Status</h5> </li>
-          <li class="list-group-item">
-            <div class="form-group row">
-              <select class="form-control" id="status" name="status">
-                <option value="1" @if (isset($user) && $user->status == 0) {{ 'selected' }} @endif>Pending</option>
-                <option value="1" @if (isset($user) && $user->status == 1) {{ 'selected' }} @endif>Publish</option>
-              </select>
-            </div>
-            <div class="form-group row">
-              <div class="col-md-12">
-                @if(isset($user))
-                  <input type="submit" name="submit" class="btn btn-primary btn-block" value="Update Product">
-                @else
-                  <input type="submit" name="submit" class="btn btn-primary btn-block" value="Add Product">
-                @endif
-              </div>
-            </div>
-          </li>
-          <li class="list-group-item active"> <h5>Featured User</h5> </li>
+          <li class="list-group-item active"> <h5>Profile Image</h5> </li>
           <li class="list-group-item">
             <div class="input-group mb-3">
               <div class="custom-file">
@@ -120,32 +147,13 @@
             </div>
           </li>
           <li class="list-group-item">
-            <div class="col-12">
-              <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"> <input type="checkbox" name="featured" id="featured" value="
-                    @if (isset($user)) {{ @$user->featured }} @else 0 @endif"
-                    @if (isset($user) && $user->featured == 1) {{ 'checked' }} @endif> </span>
-                </div>
-                <p type="text" class="form-control" aria-label="featured"
-                aria-describedby="featured">Featured User</p>
-              </div>
-            </div>
-          </li>
-          @php
-            $ids = (isset($user) && $user->role->count() > 0) ? array_pluck($user->role->toArray(), 'id') : null
-          @endphp
-          <li class="list-group-item active"> <h5>Select Role</h5> </li>
-          <li class="list-group-item">
-            <select class="form-control" name="role_id" id="select2">
-              @if ($roles->count() > 0)
-                @foreach ($roles as $role)
-                  <option value="{{ $role->id }}"
-                    @if (!is_null($ids) && in_array($role->id, $ids)) {{ 'selected' }} @endif
-                    >{{ $role->name }}</option>
-                @endforeach
+            <div class="col-md-12">
+              @if(isset($user))
+                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Update User">
+              @else
+                <input type="submit" name="submit" class="btn btn-primary btn-block" value="Add User">
               @endif
-            </select>
+            </div>
           </li>
         </ul>
       </div>
@@ -157,33 +165,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
   <script>
       $(document).ready(function() {
-        ClassicEditor.create(document.querySelector('#description'), {
-          toolbar: ['Heading', 'Link', 'bold', 'italic', 'bulletedList', 'numberedList',
-          'blockQuote', 'undo', 'redo'],
-        }).then(editor => {
-          console.log(editor);
-        }).catch(error => {
-          console.error(error);
-        })
-        @php
-          if (!isset($product)) {
-        @endphp
         $('#txturl').on('keyup', function() {
           const pretty_url = slugify($(this).val())
           $('#url').html(slugify(pretty_url))
           $('#slug').val(pretty_url)
         })
-        $('#select2').select2({
-          placeholder: "Select multiple Categories",
-          allowClear: true
-        });
-        @php
-          }
-        @endphp
-        $('#status').select2({
-          placeholder: "Select a status",
-          allowClear: true
-        });
+
         $('#thumbnail').on('change', function() {
           var file = $(this).get(0).files;
           var reader = new FileReader();
@@ -193,32 +180,48 @@
             $('#imgthumbnail').attr('src', image);
           });
         });
-        $('#btn-add').on('click', function(e) {
-          var count = $('.options').length + 1;
-          $('#extras').append('<div class="row align-items-center options">\
-                                <div class="col-sm-4">\
-                                  <label class="form-control-label">Option <span>'+ count +'</span></label>\
-                                  <input type="text" name="extra[\'option\'][]" class="form-control" value="" placeholder="size"/>\
-                                </div>\
-                                <div class="col-sm-8">\
-                                  <label class="form-control-label">Values</label>\
-                                  <input type="text" name="extra[\'values\'][]" class="form-control" value="" placeholder="option1 | option2 | option3"/>\
-                                  <label class="form-control-label">Additional Prices</label>\
-                                  <input type="text" name="extra[\'price\'][]" class="form-control" value="" placeholder="price1 | price2 | price3"/>\
-                                </div>\
-                              </div>');
+
+        $('#countries').select2();
+        $('#states').select2();
+        $('#cities').select2();
+
+        /* On Country Change */
+        $('#countries').on('change', function() {
+          var id = $('#countries').select2('data')[0].id
+          $('#states').val(null)
+          $('#states option').remove()
+          var state = $('#states')
+          $.ajax({
+            type: 'GET',
+            url: "{{ route('admin.profile.states') }}/" + id
+          }).then(function(data){
+            for (i = 0; i < data.length; i++){
+              var item = data[i]
+              var option = new Option(item.name, item.id, true, true)
+              state.append(option)
+            }
+            state.trigger('change')
+          })
         })
-        $('#btn-remove').on('click', function(e) {
-          if ($('.option').length > 1) {
-            $('.option:last').remove();
-          }
+
+        /* On State Change */
+        $('#states').on('change', function() {
+          var id = $('#states').select2('data')[0].id
+          $('#cities').val(null)
+          $('#cities option').remove()
+          var city = $('#cities')
+          $.ajax({
+            type: 'GET',
+            url: "{{ route('admin.profile.cities') }}/" + id
+          }).then(function(data){
+            for (i = 0; i < data.length; i++){
+              var item = data[i]
+              var option = new Option(item.name, item.id, false, false)
+              city.append(option)
+            }
+          })
         })
-        $('#featured').on('change', function(){
-          if($(this).is(':checked'))
-            $(this).val(1)
-          else
-            $(this).val(0)
-        })
+
       });
   </script>
 @endsection

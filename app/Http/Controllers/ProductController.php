@@ -40,11 +40,13 @@ class ProductController extends Controller
      */
     public function store(StoreProduct $request)
     {
-      if($request->has('thumbnail')) {
-        $extension = ".".$request->thumbnail->getClientOriginalExtension();
-        $name = basename($request->thumbnail->getClientOriginalName(), $extension).time();
-        $name = $name.$extension;
-        $path = $request->thumbnail->storeAs('images', $name, 'public');
+        $path = 'images/no-thumbnail.png';
+        if($request->has('thumbnail')) {
+          $extension = ".".$request->thumbnail->getClientOriginalExtension();
+          $name = basename($request->thumbnail->getClientOriginalName(), $extension).time();
+          $name = $name.$extension;
+          $path = $request->thumbnail->storeAs('images/products', $name, 'public');
+        }
         $product = Product::create([
           'title' => $request->title,
           'slug' => $request->slug,
@@ -63,7 +65,6 @@ class ProductController extends Controller
         }else {
           return back()->with('message', 'Product Not Added..!');
         }
-      }
     }
 
     /**

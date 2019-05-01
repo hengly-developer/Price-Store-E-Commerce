@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Profile;
+use App\User;
+use App\Role;
+use App\Country;
+use App\State;
+use App\City;
+use App\Http\Requests\StoreUserProfile;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -14,7 +20,15 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::with('role', 'profile')->paginate(3);
+
+        return view('admin.users.index', compact('users'));
+    }
+
+    public function trash() {
+      $users = User::with('role')->onlyTrashed()->paginate(3);
+
+      return view('admin.profile.index', compact('users'));
     }
 
     /**
@@ -24,7 +38,10 @@ class ProfileController extends Controller
      */
     public function create()
     {
-        //
+      $roles = Role::all();
+      $countries = Country::all();
+
+      return view('admin.users.create', compact('roles', 'countries'));
     }
 
     /**
@@ -33,9 +50,38 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserProfile $request)
     {
-        //
+        if($request->has('thumbnail')) {
+          $extension = ".".$request->thumbnail->getClientOriginalExtension();
+          $name = basename($request->thumbnail->getClientOriginalName(), $extension).time();
+          $name = $name.$extension;
+          $path = $request->thumbnail->storeAs('images/profile', $name, 'public');
+        }
+        $user = User::create([
+          'email' => $request->email,
+          'name' => $request->name,
+          'password' => bcrypt($request->password),
+          'status' => $request->status
+        ]);
+        if ($user) {
+          $profile = Profile::create([
+            'user_id' => $user->id,
+            'name' => $request->name,
+            'country_id' => $request->country_id,
+            'state_id' => $request->state_id,
+            'city_id' => $request->city_id,
+            'phone' => $request->phone,
+            'slug' => $request->slug,
+            'address' => $request->address,
+            'thumbnail' => $path,
+          ]);
+        }
+        if ($user && $profile) {
+          return redirect(route('admin.users.index'))->with('message', 'Profile Added Successfully..!');
+        }else {
+          return back()->with('message', 'Profile Not Added..!');
+        }
     }
 
     /**
@@ -81,5 +127,32 @@ class ProfileController extends Controller
     public function destroy(Profile $profile)
     {
         //
+    }
+
+    // public function recoverProfile($id) {
+    //
+    // }
+
+    public function remove(Profile $profile) {
+      if ($profile->delete()) {
+        return back()->with('message', 'Profile Trashed Successfully...!');
+      }else {
+        return back()->with('message', 'Profile Trashed Error...!');
+      }
+    }
+
+    public function getStates(Request $request, $id) {
+      if ($request->ajax()) {
+        return State::where('country_id', $id)->get();
+      }else {
+        return 0;
+      }
+    }
+    public function getCities(Request $request, $id) {
+      if ($request->ajax()) {
+        return City::where('state_id', $id)->get();
+      }else {
+        return 0;
+      }
     }
 }

@@ -30,8 +30,19 @@ Route::group(['as' => 'admin.', 'middleware' => ['auth','admin'], 'prefix' => 'a
   Route::get('products/trash', 'ProductController@trash')->name('products.trash');
   Route::get('products/recover/{id}', 'ProductController@recoverProduct')->name('products.recover');
 
+  Route::view('product/extras', 'admin.partials.extras')->name('product.extras');
+
+  Route::get('profile/{profile}/remove', 'ProfileController@remove')->name('profile.remove');
+  Route::get('profile/trash', 'ProfileController@trash')->name('profile.trash');
+  Route::get('profile/recover/{id}', 'ProfileController@recoverProfile')->name('profile.recover');
+  Route::view('profile/roles', 'admin.partials.extras')->name('profile.extras');
+
+  Route::get('profile/states/{id?}', 'ProfileController@getStates')->name('profile.states');
+  Route::get('profile/cities/{id?}', 'ProfileController@getCities')->name('profile.cities');
+
   Route::get('dashboard', 'AdminController@dashboard')->name('dashboard');
 
   Route::resource('products', 'ProductController');
   Route::resource('category', 'CategoryController');
+  Route::resource('profile', 'ProfileController');
 });

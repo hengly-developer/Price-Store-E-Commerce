@@ -52,8 +52,9 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="bar-chart-2"></span>
+            <a class="nav-link @if(request()->url() == route('admin.profile.index')) {{ 'active' }} @else {{ '' }} @endif" href="
+              {{ route('admin.profile.index') }}">
+              <span data-feather="users"></span>
               Customers
             </a>
           </li>
