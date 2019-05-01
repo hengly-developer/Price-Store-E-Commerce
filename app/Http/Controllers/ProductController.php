@@ -75,7 +75,13 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $categories = Category::with('childrens')->get();
+        $products = Product::with('categories')->paginate(12);
+        return view('products.all', compact('categories', 'products'));
+    }
+
+    public function single(Product $product) {
+      return view('products.single', compact('product'));
     }
 
     /**

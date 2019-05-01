@@ -20,6 +20,19 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('logout', 'Auth\LoginController@logout');
 
+// Route::group(['as' => 'products.', 'prefix' => 'products'], function(){
+//   Route::get('all', 'ProductController@all')->name('all');
+// });
+//
+// Route::group(['as' => 'category.', 'prefix' => 'products'], function(){
+//   Route::get('/{category}', 'ProductController@getProducts')->name('products');
+// });
+
+Route::group(['as' => 'products.', 'prefix' => 'products'], function() {
+  Route::get('/', 'ProductController@show')->name('all');
+  Route::get('/{product}', 'ProductController@single')->name('single');
+});
+
 Route::group(['as' => 'admin.', 'middleware' => ['auth','admin'], 'prefix' => 'admin'], function() {
 
   Route::get('category/{category}/remove', 'CategoryController@remove')->name('category.remove');

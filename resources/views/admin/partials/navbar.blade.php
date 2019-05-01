@@ -27,7 +27,7 @@
           </li>
           <li class="nav-item">
             <div class="dropdown">
-                <a id="productDropdown" class="nav-link @if (request()->url() == route('admin.products.index')) {{ 'active' }}  @endif dropdown-toggle" href="#"
+                <a id="productDropdown" class="nav-link @if (request()->url() == route('admin.products.index')) {{ 'active' }}  @endif dropdown-toggle" href="{{ route('admin.products.index') }}"
                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span data-feather="shopping-cart"></span>
                   Products
@@ -40,7 +40,7 @@
             </div>
           </li>
           <li class="nav-item dropdown">
-            <a id="categoryDropdown" class="nav-link @if (request()->url() == route('admin.category.index')) {{ 'active' }}  @endif dropdown-toggle" href="javascript:;"
+            <a id="categoryDropdown" class="nav-link @if (request()->url() == route('admin.category.index')) {{ 'active' }}  @endif dropdown-toggle" href="{{ route('admin.category.index') }}"
               role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span data-feather="users"></span>
               Categories
