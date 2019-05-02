@@ -44,6 +44,33 @@ class ProductController extends Controller
 
       return back()->with('message', "Product $product->title as been added to Cart Successfully...!");
     }
+
+    public function cart() {
+      if (!Session::has('cart')) {
+        return view('products.cart');
+      }
+      $cart = Session::get('cart');
+      dd($cart);
+      return view('products.cart', compact('cart'));
+    }
+
+    public function removeCart(Product $product) {
+      $oldCart = Session::has('cart') ? Session::get('cart') : null;
+      $cart = new Cart($oldCart);
+      $cart->removeCart($product);
+      Session::put('cart', $cart);
+      return back()->with('message', "Product $product->title as been removed from Cart Successfully...!");
+    }
+
+    public function updateCart(Product $product, Request $request) {
+      $oldCart = Session::has('cart') ? Session::get('cart') : null;
+      $cart = new Cart($oldCart);
+      $cart->updateCart($product, $request->qty);
+      Session::put('cart', $cart);
+
+      return back()->with('message', "Product $product->title as been updated from Cart Successfully...!");
+    }
+
     /**
      * Store a newly created resource in storage.
      *

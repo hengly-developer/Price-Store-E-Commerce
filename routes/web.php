@@ -34,6 +34,12 @@ Route::group(['as' => 'products.', 'prefix' => 'products'], function() {
   Route::get('/addToCart/{product}', 'ProductController@addToCart')->name('addToCart');
 });
 
+Route::group(['as' => 'cart.', 'prefix' => 'cart'], function() {
+  Route::get('/', 'ProductController@cart')->name('all');
+  Route::post('/remove/{product}', 'ProductController@removeCart')->name('remove');
+  Route::post('/update/{product}', 'ProductController@updateCart')->name('update');
+});
+
 Route::group(['as' => 'admin.', 'middleware' => ['auth','admin'], 'prefix' => 'admin'], function() {
 
   Route::get('category/{category}/remove', 'CategoryController@remove')->name('category.remove');

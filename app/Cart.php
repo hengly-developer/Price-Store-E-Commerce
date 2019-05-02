@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use App\Product;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,5 +31,41 @@ class Cart
     $this->contents[$product->slug] = $products;
     $this->totalQty += $qty;
     $this->totalPrice += $product->price;
+  }
+
+  public function removeCart($product) {
+    if ($this->contents) {
+      if (array_key_exists($product->slug, $this->contents)) {
+        $rProduct = $this->contents[$product->slug];
+        $this->totalQty -= $rProduct['qty'];
+        $this->totalPrice -= $rProduct['price'];
+        array_forget($this->contents, $product->slug);
+      }
+    }
+  }
+
+  public function updateCart($product, $qty) {
+    if ($this->contents) {
+      if (array_key_exists($product->slug, $this->contents)) {
+        $products = $this->contents[$product->slug];
+      }
+    }
+    $this->totalQty -= $products['qty'] ;
+    $this->totalPrice -= $products['price'];
+    $products['qty'] = $qty;
+    $products['price'] = $product->price * $qty;
+    $this->totalPrice += $products['price'];
+    $this->totalQty += $qty;
+    $this->contents[$product->slug] = $products;
+  }
+
+  public function getContents() {
+    return $this->contents;
+  }
+  public function getTotalQty() {
+    return $this->totalQty;
+  }
+  public function getTotalPrice() {
+    return $this->totalPrice;
   }
 }
