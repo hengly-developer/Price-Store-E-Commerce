@@ -50,7 +50,7 @@ class ProductController extends Controller
         return view('products.cart');
       }
       $cart = Session::get('cart');
-      dd($cart);
+      // dd($cart);
       return view('products.cart', compact('cart'));
     }
 

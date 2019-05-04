@@ -68,4 +68,7 @@ class Cart
   public function getTotalPrice() {
     return $this->totalPrice;
   }
+  public function countProducts() {
+    return count($this->contents);
+  }
 }

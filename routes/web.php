@@ -14,19 +14,13 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::resource('/checkout', 'OrderController');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('logout', 'Auth\LoginController@logout');
 
-// Route::group(['as' => 'products.', 'prefix' => 'products'], function(){
-//   Route::get('all', 'ProductController@all')->name('all');
-// });
-//
-// Route::group(['as' => 'category.', 'prefix' => 'products'], function(){
-//   Route::get('/{category}', 'ProductController@getProducts')->name('products');
-// });
 
 Route::group(['as' => 'products.', 'prefix' => 'products'], function() {
   Route::get('/', 'ProductController@show')->name('all');
